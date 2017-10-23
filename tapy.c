@@ -125,6 +125,9 @@ void setup_jack_client() {
 
 /* Python module magic */
 
+
+/* Method definitions */
+
 static PyObject* tapy_setup(PyObject* self, PyObject* args) {
   setup_jack_client();
 
@@ -139,12 +142,18 @@ static PyObject* tapy_shutdown(PyObject* self, PyObject* args) {
 }
 
 
+/* Module method table */
+
 static PyMethodDef TapyMethods[] = {
   {"setup",  tapy_setup, METH_VARARGS, "."},
   {"shutdown",  tapy_shutdown, METH_VARARGS, "."},
   {NULL, NULL, 0, NULL} /* Sentinel */
 };
 
+
+/* Module definition and initialisation */
+
+#if PY_MAJOR_VERSION >= 3
 
 static struct PyModuleDef tapymodule = {
   PyModuleDef_HEAD_INIT,
@@ -158,7 +167,14 @@ static struct PyModuleDef tapymodule = {
   TapyMethods
 };
 
-
 PyMODINIT_FUNC PyInit_tapy(void) {
   return PyModule_Create(&tapymodule);
 }
+
+#else // PY_MAJOR_VERSION < 3
+
+PyMODINIT_FUNC inittapy(void) {
+  (void) Py_InitModule("tapy", TapyMethods);
+}
+
+#endif
